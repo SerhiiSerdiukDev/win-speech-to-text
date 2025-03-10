@@ -19,9 +19,8 @@ namespace WinSpeechToText
         private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
 
         private const int HOTKEY_ID = 1;  // Unique ID
-        private const uint MOD_CTRL = 0x0002; // Ctrl key
-        private const uint MOD_ALT = 0x0001; // Alt key
-        private const uint VK_SPACE = 0x20;  // Space key
+        private const uint MOD_ALT = 0x0001;
+        private const uint VK_Q = 0x51;  // Q key
 
         private WaveInEvent waveSource;
         private WaveFileWriter waveFile;
@@ -34,8 +33,8 @@ namespace WinSpeechToText
         public Form1()
         {
             InitializeComponent();
-            // Register Ctrl+Alt+Space as the global hotkey
-            RegisterHotKey(this.Handle, HOTKEY_ID, MOD_CTRL | MOD_ALT, VK_SPACE);
+            // Register Ctrl+Alt+Q as the global hotkey
+            RegisterHotKey(this.Handle, HOTKEY_ID, MOD_ALT, VK_Q);
             this.FormClosing += Form1_FormClosing;
 
             // Initialize Tray Icon
@@ -44,8 +43,17 @@ namespace WinSpeechToText
 
             trayIcon = new NotifyIcon();
             trayIcon.Text = "WinSpeechToText";
-            trayIcon.Icon = new Icon("icon_win_speech_to_text.ico");
-            trayIcon.Icon = new Icon(SystemIcons.Application, 40, 40);
+
+            // Ensure the icon file path is correct
+            string iconPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "icon_win_speech_to_text.ico");
+            if (File.Exists(iconPath))
+            {
+                trayIcon.Icon = new Icon(iconPath);
+            }
+            else
+            {
+                trayIcon.Icon = SystemIcons.Application;
+            }
 
             trayIcon.ContextMenu = trayMenu;
             trayIcon.Visible = true;
@@ -68,6 +76,7 @@ namespace WinSpeechToText
                     this.Show();
                     this.WindowState = FormWindowState.Normal;
                 }
+                this.Activate();
 
                 if (isRecording)
                     StopRecording();
@@ -81,9 +90,7 @@ namespace WinSpeechToText
         {
             e.Cancel = true;
             this.Hide();
-            UnregisterHotKey(this.Handle, HOTKEY_ID);
 
-            // Clean up recording resources if still active
             if (isRecording)
             {
                 StopRecording();
