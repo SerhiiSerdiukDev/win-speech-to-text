@@ -1,1 +1,1 @@
-# WinWhisper
+# win-speech-to-text
