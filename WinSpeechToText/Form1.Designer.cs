@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.btnRecord = new System.Windows.Forms.Button();
             this.btnTranslate = new System.Windows.Forms.Button();
             this.txtTranscription = new System.Windows.Forms.TextBox();
@@ -38,33 +39,35 @@
             // 
             // btnRecord
             // 
+            this.btnRecord.BackColor = System.Drawing.SystemColors.Control;
+            this.btnRecord.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.btnRecord.Location = new System.Drawing.Point(889, 13);
-            this.btnRecord.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnRecord.Margin = new System.Windows.Forms.Padding(4);
             this.btnRecord.Name = "btnRecord";
             this.btnRecord.Size = new System.Drawing.Size(160, 39);
             this.btnRecord.TabIndex = 0;
-            this.btnRecord.Text = "Start";
-            this.btnRecord.UseVisualStyleBackColor = true;
+            this.btnRecord.Text = "To text";
+            this.btnRecord.UseVisualStyleBackColor = false;
             this.btnRecord.Click += new System.EventHandler(this.btnRecord_Click);
             // 
             // btnTranslate
             // 
             this.btnTranslate.Location = new System.Drawing.Point(889, 60);
-            this.btnTranslate.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnTranslate.Margin = new System.Windows.Forms.Padding(4);
             this.btnTranslate.Name = "btnTranslate";
             this.btnTranslate.Size = new System.Drawing.Size(160, 39);
             this.btnTranslate.TabIndex = 1;
-            this.btnTranslate.Text = "Translate";
+            this.btnTranslate.Text = "To English";
             this.btnTranslate.UseVisualStyleBackColor = true;
             this.btnTranslate.Click += new System.EventHandler(this.btnTranslate_Click);
             // 
             // txtTranscription
             // 
-            this.txtTranscription.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.txtTranscription.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtTranscription.Location = new System.Drawing.Point(16, 13);
-            this.txtTranscription.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtTranscription.Margin = new System.Windows.Forms.Padding(4);
             this.txtTranscription.Multiline = true;
             this.txtTranscription.Name = "txtTranscription";
             this.txtTranscription.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -84,7 +87,7 @@
             // btnSetApiKey
             // 
             this.btnSetApiKey.Location = new System.Drawing.Point(889, 154);
-            this.btnSetApiKey.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnSetApiKey.Margin = new System.Windows.Forms.Padding(4);
             this.btnSetApiKey.Name = "btnSetApiKey";
             this.btnSetApiKey.Size = new System.Drawing.Size(160, 39);
             this.btnSetApiKey.TabIndex = 4;
@@ -95,7 +98,7 @@
             // btnCopy
             // 
             this.btnCopy.Location = new System.Drawing.Point(889, 107);
-            this.btnCopy.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnCopy.Margin = new System.Windows.Forms.Padding(4);
             this.btnCopy.Name = "btnCopy";
             this.btnCopy.Size = new System.Drawing.Size(160, 39);
             this.btnCopy.TabIndex = 5;
@@ -114,9 +117,11 @@
             this.Controls.Add(this.txtTranscription);
             this.Controls.Add(this.btnTranslate);
             this.Controls.Add(this.btnRecord);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
-            this.Text = "WinSpeechToText";
+            this.Text = "Win Speech To Text";
             this.ResumeLayout(false);
             this.PerformLayout();
 
