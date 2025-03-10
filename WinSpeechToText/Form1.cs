@@ -44,6 +44,7 @@ namespace WinSpeechToText
 
             trayIcon = new NotifyIcon();
             trayIcon.Text = "WinSpeechToText";
+            trayIcon.Icon = new Icon("icon_win_speech_to_text.ico");
             trayIcon.Icon = new Icon(SystemIcons.Application, 40, 40);
 
             trayIcon.ContextMenu = trayMenu;
