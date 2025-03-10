@@ -1,5 +1,9 @@
 # WinSpeechToText
 
+## Introduction
+
+WinSpeechToText is an application designed to convert spoken language into written text. Leveraging advanced speech recognition technologies, this application provides an efficient and accurate way to transcribe audio input into text format.
+
 ## Building the Production-Ready Application
 
 Follow these steps to build the WinSpeechToText application. These instructions are designed to be clear for non-programmer users.
