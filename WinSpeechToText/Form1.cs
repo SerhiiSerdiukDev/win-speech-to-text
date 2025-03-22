@@ -304,7 +304,17 @@ namespace WinSpeechToText
 
                             // Update the text box with the transcription
                             txtTranscription.Text = transcribedText;
-                            lblStatus.Text = "Transcription complete";
+                            
+                            // Automatically copy the transcribed text to clipboard
+                            if (!string.IsNullOrEmpty(transcribedText))
+                            {
+                                Clipboard.SetText(transcribedText);
+                                lblStatus.Text = "Transcription complete and copied to clipboard";
+                            }
+                            else
+                            {
+                                lblStatus.Text = "Transcription complete (empty result)";
+                            }
                         }
                         else
                         {
@@ -358,7 +368,17 @@ namespace WinSpeechToText
 
                             // Update the text box with the translation
                             txtTranscription.Text = translatedText;
-                            lblStatus.Text = "Translation complete";
+                            
+                            // Automatically copy the translated text to clipboard
+                            if (!string.IsNullOrEmpty(translatedText))
+                            {
+                                Clipboard.SetText(translatedText);
+                                lblStatus.Text = "Translation complete and copied to clipboard";
+                            }
+                            else
+                            {
+                                lblStatus.Text = "Translation complete (empty result)";
+                            }
                         }
                         else
                         {
