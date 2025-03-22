@@ -41,6 +41,10 @@ namespace WinSpeechToText
             RegisterHotKey(this.Handle, HOTKEY_ID_RECORD, MOD_ALT, VK_Q);
             RegisterHotKey(this.Handle, HOTKEY_ID_TRANSLATE, MOD_ALT, VK_E); // Changed from MOD_CONTROL to MOD_ALT
             this.FormClosing += Form1_FormClosing;
+            
+            // Enable handling of keyboard input
+            this.KeyPreview = true;
+            this.KeyDown += Form1_KeyDown;
 
             // Initialize Tray Icon
             trayMenu = new ContextMenu();
@@ -355,7 +359,7 @@ namespace WinSpeechToText
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
                     using (var content = new MultipartFormDataContent())
                     {
-                        content.Add(new StringContent("gpt-4o-transcribe"), "model");
+                        content.Add(new StringContent("whisper-1"), "model");
                         content.Add(new ByteArrayContent(File.ReadAllBytes(audioFilePath)), "file", "audio.wav");
 
                         HttpResponseMessage response = await client.PostAsync(endpoint, content);
@@ -461,6 +465,30 @@ namespace WinSpeechToText
                 return credential.Password;
             }
             return string.Empty;
+        }
+
+        // Add KeyDown event handler for the Escape key
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                // Minimize to system tray when Escape is pressed
+                MinimizeToTray();
+                e.Handled = true;  // Prevent further processing of this key
+            }
+        }
+
+        // Add a helper method to minimize to tray
+        private void MinimizeToTray()
+        {
+            // Hide the form
+            this.Hide();
+            
+            // If recording is in progress, don't stop it
+            // This allows the user to continue recording even when minimized
+            
+            // Show a notification if needed
+            // trayIcon.ShowBalloonTip(1000, "WinSpeechToText", "Application minimized to tray", ToolTipIcon.Info);
         }
     }
 }

@@ -66,6 +66,7 @@
             this.txtTranscription.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtTranscription.Font = new System.Drawing.Font("Segoe UI", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtTranscription.Location = new System.Drawing.Point(16, 13);
             this.txtTranscription.Margin = new System.Windows.Forms.Padding(4);
             this.txtTranscription.Multiline = true;
@@ -118,7 +119,6 @@
             this.Controls.Add(this.btnTranslate);
             this.Controls.Add(this.btnRecord);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.Text = "Win Speech To Text";
