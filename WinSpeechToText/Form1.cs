@@ -18,23 +18,28 @@ namespace WinSpeechToText
         [DllImport("user32.dll")]
         private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
 
-        private const int HOTKEY_ID = 1;  // Unique ID
+        private const int HOTKEY_ID_RECORD = 1;          // Original hotkey ID
+        private const int HOTKEY_ID_TRANSLATE = 2;       // New hotkey ID for translation
         private const uint MOD_ALT = 0x0001;
+        private const uint MOD_CONTROL = 0x0002;         // Ctrl modifier
         private const uint VK_Q = 0x51;  // Q key
+        private const uint VK_E = 0x45;  // E key
 
         private WaveInEvent waveSource;
         private WaveFileWriter waveFile;
         private string audioFilePath = "recorded_audio.wav";
         private bool isRecording = false;
         private bool isTranslating = false;
+        private bool isTranslationMode = false;
         private NotifyIcon trayIcon;
         private ContextMenu trayMenu;
 
         public Form1()
         {
             InitializeComponent();
-            // Register Ctrl+Alt+Q as the global hotkey
-            RegisterHotKey(this.Handle, HOTKEY_ID, MOD_ALT, VK_Q);
+            // Register both hotkeys
+            RegisterHotKey(this.Handle, HOTKEY_ID_RECORD, MOD_ALT, VK_Q);
+            RegisterHotKey(this.Handle, HOTKEY_ID_TRANSLATE, MOD_ALT, VK_E); // Changed from MOD_CONTROL to MOD_ALT
             this.FormClosing += Form1_FormClosing;
 
             // Initialize Tray Icon
@@ -69,19 +74,46 @@ namespace WinSpeechToText
         protected override void WndProc(ref Message m)
         {
             const int WM_HOTKEY = 0x0312;
-            if (m.Msg == WM_HOTKEY && m.WParam.ToInt32() == HOTKEY_ID)
+            if (m.Msg == WM_HOTKEY)
             {
-                if (this.WindowState == FormWindowState.Minimized || !this.Visible)
+                int hotkeyId = m.WParam.ToInt32();
+                
+                if (hotkeyId == HOTKEY_ID_RECORD || hotkeyId == HOTKEY_ID_TRANSLATE)
                 {
-                    this.Show();
-                    this.WindowState = FormWindowState.Normal;
-                }
-                this.Activate();
+                    if (this.WindowState == FormWindowState.Minimized || !this.Visible)
+                    {
+                        this.Show();
+                        this.WindowState = FormWindowState.Normal;
+                    }
+                    this.Activate();
 
-                if (isRecording)
-                    StopRecording();
-                else
-                    StartRecording();
+                    if (isRecording)
+                    {
+                        // When stopping recording, preserve the current mode
+                        // This ensures that Alt+Q stops transcription and Alt+E stops translation
+                        bool wasTranslationMode = isTranslationMode;
+                        StopRecording();
+                        isTranslationMode = wasTranslationMode; // Preserve mode during processing
+                    }
+                    else
+                    {
+                        // Set the translation mode based on which hotkey was pressed
+                        isTranslationMode = (hotkeyId == HOTKEY_ID_TRANSLATE);
+                        
+                        if (isTranslationMode)
+                        {
+                            isTranslating = true;
+                            lblStatus.Text = "Starting translation recording (press Alt+E to stop)...";
+                        }
+                        else
+                        {
+                            isTranslating = false;
+                            lblStatus.Text = "Starting transcription recording (press Alt+Q to stop)...";
+                        }
+                        
+                        StartRecording();
+                    }
+                }
             }
             base.WndProc(ref m);
         }
@@ -99,7 +131,9 @@ namespace WinSpeechToText
 
         private void OnExit(object sender, EventArgs e)
         {
-            UnregisterHotKey(this.Handle, HOTKEY_ID);
+            // Unregister both hotkeys
+            UnregisterHotKey(this.Handle, HOTKEY_ID_RECORD);
+            UnregisterHotKey(this.Handle, HOTKEY_ID_TRANSLATE);
             trayIcon.Visible = false;
             Application.Exit();
         }
@@ -117,7 +151,11 @@ namespace WinSpeechToText
                 isRecording = true;
 
                 // Update UI
-                lblStatus.Text = "Recording in progress...";
+                if (isTranslationMode)
+                    lblStatus.Text = "Translation recording in progress (press Alt+E to stop)..."; // Changed from Ctrl+E to Alt+E
+                else
+                    lblStatus.Text = "Recording in progress (press Alt+Q to stop)...";
+                    
                 txtTranscription.Clear();
                 btnRecord.Text = "Stop";
                 btnTranslate.Enabled = false;
@@ -163,7 +201,11 @@ namespace WinSpeechToText
 
             // Update UI to show we're processing
             UpdateUiForProcessing(true);
-            lblStatus.Text = "Sending audio to OpenAI...";
+            
+            if (isTranslationMode)
+                lblStatus.Text = "Sending audio for translation...";
+            else
+                lblStatus.Text = "Sending audio for transcription...";
 
             // Use BeginInvoke to ensure UI updates are processed
             if (isTranslating)
@@ -175,6 +217,9 @@ namespace WinSpeechToText
             {
                 BeginInvoke(new Action(() => SendAudioToOpenAI()));
             }
+            
+            // Don't reset the translation mode flag here anymore
+            // The mode is now preserved by the WndProc method
         }
 
         private async void SendAudioToOpenAI()
@@ -306,6 +351,7 @@ namespace WinSpeechToText
         private void btnTranslate_Click(object sender, EventArgs e)
         {
             isTranslating = true;
+            isTranslationMode = true;  // Set the translation mode
             StartRecording();
         }
 
