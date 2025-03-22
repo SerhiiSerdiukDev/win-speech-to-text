@@ -120,6 +120,15 @@ namespace WinSpeechToText
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            // Check if Windows is shutting down - don't prevent this
+            if (e.CloseReason == CloseReason.WindowsShutDown || e.CloseReason == CloseReason.TaskManagerClosing)
+            {
+                // Clean up resources before shutdown
+                CleanupResources();
+                return; // Allow the form to close
+            }
+
+            // For normal closing (user clicked X), just hide to tray
             e.Cancel = true;
             this.Hide();
 
@@ -129,12 +138,52 @@ namespace WinSpeechToText
             }
         }
 
+        // Add a new method to properly clean up resources
+        private void CleanupResources()
+        {
+            // Make sure recording is stopped
+            if (isRecording)
+            {
+                try
+                {
+                    // Use try-catch as we're in shutdown and want to ensure everything gets cleaned up
+                    StopRecording();
+                }
+                catch { /* Ignore errors during shutdown */ }
+            }
+
+            // Unregister hotkeys
+            try 
+            {
+                UnregisterHotKey(this.Handle, HOTKEY_ID_RECORD);
+                UnregisterHotKey(this.Handle, HOTKEY_ID_TRANSLATE);
+            }
+            catch { /* Ignore errors during shutdown */ }
+
+            // Dispose of notification icon
+            if (trayIcon != null)
+            {
+                trayIcon.Visible = false;
+                trayIcon.Dispose();
+            }
+
+            // Dispose any remaining resources
+            if (waveSource != null)
+            {
+                waveSource.Dispose();
+                waveSource = null;
+            }
+
+            if (waveFile != null)
+            {
+                waveFile.Dispose();
+                waveFile = null;
+            }
+        }
+
         private void OnExit(object sender, EventArgs e)
         {
-            // Unregister both hotkeys
-            UnregisterHotKey(this.Handle, HOTKEY_ID_RECORD);
-            UnregisterHotKey(this.Handle, HOTKEY_ID_TRANSLATE);
-            trayIcon.Visible = false;
+            CleanupResources();
             Application.Exit();
         }
 
