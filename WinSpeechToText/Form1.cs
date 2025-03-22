@@ -197,7 +197,7 @@ namespace WinSpeechToText
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
                     using (var content = new MultipartFormDataContent())
                     {
-                        content.Add(new StringContent("whisper-1"), "model");
+                        content.Add(new StringContent("gpt-4o-transcribe"), "model");
                         content.Add(new ByteArrayContent(File.ReadAllBytes(audioFilePath)), "file", "audio.wav");
 
                         HttpResponseMessage response = await client.PostAsync(endpoint, content);
