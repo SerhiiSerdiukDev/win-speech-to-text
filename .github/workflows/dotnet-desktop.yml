@@ -58,9 +58,9 @@ jobs:
 
     env:
       Solution_Name: WinSpeechToText.sln
-      Test_Project_Path: WinSpeechToText.Tests\WinSpeechToText.Tests.csproj
-      Wap_Project_Directory: WinSpeechToText.Package
-      Wap_Project_Path: WinSpeechToText.App.Package\WinSpeechToText.Package.wapproj
+      # Test_Project_Path: WinSpeechToText.Tests\WinSpeechToText.Tests.csproj
+      Wap_Project_Directory: WinSpeechToText
+      Wap_Project_Path: WinSpeechToText\WinSpeechToText.cspoj
 
     steps:
     - name: Checkout
@@ -87,13 +87,6 @@ jobs:
       run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
       env:
         Configuration: ${{ matrix.configuration }}
-
-    # Create the WinSpeechToText.Package directory if it does not exist
-    - name: Create WinSpeechToText.Package directory
-      run: |
-        if (-not (Test-Path -Path $env:Wap_Project_Directory)) {
-          New-Item -ItemType Directory -Path $env:Wap_Project_Directory
-        }
 
     # Decode the base 64 encoded pfx and save the Signing_Certificate
     - name: Decode the pfx
