@@ -60,7 +60,7 @@ jobs:
       Solution_Name: WinSpeechToText.sln
       Test_Project_Path: WinSpeechToText.Tests\WinSpeechToText.Tests.csproj
       Wap_Project_Directory: WinSpeechToText.Package
-      Wap_Project_Path: WinSpeechToText.App.Package\WinSpeechToText.Package.wapproj
+      Wap_Project_Path: WinSpeechToText.Package\WinSpeechToText.Package.wapproj
 
     steps:
     - name: Checkout
