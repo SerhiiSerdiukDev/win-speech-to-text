@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.Windows.ApplicationPackaging.ProjectType">
+
+  <PropertyGroup>
+    <OutputType>Appx</OutputType>
+    <Configuration>Release</Configuration>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WinSpeechToText\WinSpeechToText.csproj" />
+  </ItemGroup>
+
+</Project>
