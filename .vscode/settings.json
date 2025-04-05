@@ -1,0 +1,4 @@
+{
+  "dotnet.preferCSharpExtension": true,
+  "terminal.integrated.defaultProfile.windows": "PowerShell"
+}

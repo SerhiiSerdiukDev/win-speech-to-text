@@ -7,7 +7,10 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using NAudio.Wave;
 using Newtonsoft.Json;
-using CredentialManagement;
+using System.Security.Cryptography;
+using System.Text;
+using Icon = System.Drawing.Icon;
+using SystemIcons = System.Drawing.SystemIcons; // Alias for System.Drawing.SystemIcons
 
 namespace WinSpeechToText
 {
@@ -32,23 +35,28 @@ namespace WinSpeechToText
         private bool isTranslating = false;
         private bool isTranslationMode = false;
         private NotifyIcon trayIcon;
-        private ContextMenu trayMenu;
+        private ContextMenuStrip trayMenu;
+        private readonly string _apiKeyFilePath;
+        private static readonly byte[] _entropy = null; // Optional entropy for DPAPI
 
         public Form1()
         {
+            // Define path for API key storage in Local AppData
+            string appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string appFolder = Path.Combine(appDataFolder, "WinSpeechToText");
+            Directory.CreateDirectory(appFolder); // Ensure the directory exists
+            _apiKeyFilePath = Path.Combine(appFolder, "apikey.dat");
+
             InitializeComponent();
-            // Register both hotkeys
             RegisterHotKey(this.Handle, HOTKEY_ID_RECORD, MOD_ALT, VK_Q);
-            RegisterHotKey(this.Handle, HOTKEY_ID_TRANSLATE, MOD_ALT, VK_E); // Changed from MOD_CONTROL to MOD_ALT
+            RegisterHotKey(this.Handle, HOTKEY_ID_TRANSLATE, MOD_ALT, VK_E);
             this.FormClosing += Form1_FormClosing;
-            
-            // Enable handling of keyboard input
+
             this.KeyPreview = true;
             this.KeyDown += Form1_KeyDown;
 
-            // Initialize Tray Icon
-            trayMenu = new ContextMenu();
-            trayMenu.MenuItems.Add("Exit", OnExit);
+            trayMenu = new ContextMenuStrip();
+            trayMenu.Items.Add("Exit", null, OnExit);
 
             trayIcon = new NotifyIcon();
             trayIcon.Text = "WinSpeechToText";
@@ -64,7 +72,7 @@ namespace WinSpeechToText
                 trayIcon.Icon = SystemIcons.Application;
             }
 
-            trayIcon.ContextMenu = trayMenu;
+            trayIcon.ContextMenuStrip = trayMenu;
             trayIcon.Visible = true;
             trayIcon.DoubleClick += TrayIcon_DoubleClick;
         }
@@ -81,7 +89,7 @@ namespace WinSpeechToText
             if (m.Msg == WM_HOTKEY)
             {
                 int hotkeyId = m.WParam.ToInt32();
-                
+
                 if (hotkeyId == HOTKEY_ID_RECORD || hotkeyId == HOTKEY_ID_TRANSLATE)
                 {
                     if (this.WindowState == FormWindowState.Minimized || !this.Visible)
@@ -93,17 +101,14 @@ namespace WinSpeechToText
 
                     if (isRecording)
                     {
-                        // When stopping recording, preserve the current mode
-                        // This ensures that Alt+Q stops transcription and Alt+E stops translation
                         bool wasTranslationMode = isTranslationMode;
                         StopRecording();
-                        isTranslationMode = wasTranslationMode; // Preserve mode during processing
+                        isTranslationMode = wasTranslationMode; // Preserve mode
                     }
                     else
                     {
-                        // Set the translation mode based on which hotkey was pressed
                         isTranslationMode = (hotkeyId == HOTKEY_ID_TRANSLATE);
-                        
+
                         if (isTranslationMode)
                         {
                             isTranslating = true;
@@ -114,7 +119,7 @@ namespace WinSpeechToText
                             isTranslating = false;
                             lblStatus.Text = "Starting transcription recording (press Alt+Q to stop)...";
                         }
-                        
+
                         StartRecording();
                     }
                 }
@@ -124,15 +129,13 @@ namespace WinSpeechToText
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // Check if Windows is shutting down - don't prevent this
             if (e.CloseReason == CloseReason.WindowsShutDown || e.CloseReason == CloseReason.TaskManagerClosing)
             {
-                // Clean up resources before shutdown
                 CleanupResources();
-                return; // Allow the form to close
+                return;
             }
 
-            // For normal closing (user clicked X), just hide to tray
+            // Hide to tray on normal close
             e.Cancel = true;
             this.Hide();
 
@@ -142,22 +145,14 @@ namespace WinSpeechToText
             }
         }
 
-        // Add a new method to properly clean up resources
         private void CleanupResources()
         {
-            // Make sure recording is stopped
             if (isRecording)
             {
-                try
-                {
-                    // Use try-catch as we're in shutdown and want to ensure everything gets cleaned up
-                    StopRecording();
-                }
-                catch { /* Ignore errors during shutdown */ }
+                try { StopRecording(); } catch { /* Ignore errors during shutdown */ }
             }
 
-            // Unregister hotkeys
-            try 
+            try
             {
                 UnregisterHotKey(this.Handle, HOTKEY_ID_RECORD);
                 UnregisterHotKey(this.Handle, HOTKEY_ID_TRANSLATE);
@@ -205,10 +200,10 @@ namespace WinSpeechToText
 
                 // Update UI
                 if (isTranslationMode)
-                    lblStatus.Text = "Translation recording in progress (press Alt+E to stop)..."; // Changed from Ctrl+E to Alt+E
+                    lblStatus.Text = "Translation recording in progress (press Alt+E to stop)...";
                 else
                     lblStatus.Text = "Recording in progress (press Alt+Q to stop)...";
-                    
+
                 txtTranscription.Clear();
                 btnRecord.Text = "Stop";
                 btnTranslate.Enabled = false;
@@ -254,13 +249,13 @@ namespace WinSpeechToText
 
             // Update UI to show we're processing
             UpdateUiForProcessing(true);
-            
+
             if (isTranslationMode)
                 lblStatus.Text = "Sending audio for translation...";
             else
                 lblStatus.Text = "Sending audio for transcription...";
 
-            // Use BeginInvoke to ensure UI updates are processed
+            // Use BeginInvoke to ensure UI updates are processed before potentially blocking API calls
             if (isTranslating)
             {
                 BeginInvoke(new Action(() => SendAudioToOpenAIForTranslation()));
@@ -270,9 +265,6 @@ namespace WinSpeechToText
             {
                 BeginInvoke(new Action(() => SendAudioToOpenAI()));
             }
-            
-            // Don't reset the translation mode flag here anymore
-            // The mode is now preserved by the WndProc method
         }
 
         private async void SendAudioToOpenAI()
@@ -308,7 +300,7 @@ namespace WinSpeechToText
 
                             // Update the text box with the transcription
                             txtTranscription.Text = transcribedText;
-                            
+
                             // Automatically copy the transcribed text to clipboard
                             if (!string.IsNullOrEmpty(transcribedText))
                             {
@@ -372,7 +364,7 @@ namespace WinSpeechToText
 
                             // Update the text box with the translation
                             txtTranscription.Text = translatedText;
-                            
+
                             // Automatically copy the translated text to clipboard
                             if (!string.IsNullOrEmpty(translatedText))
                             {
@@ -445,50 +437,69 @@ namespace WinSpeechToText
             Clipboard.SetText(txtTranscription.Text);
         }
 
-        private void SaveApiKey(string apiKey)
-        {
-            var credential = new Credential
+            private void SaveApiKey(string apiKey)
             {
-                Target = "WinSpeechToTextApiKey",
-                Username = "APIKey",
-                Password = apiKey,
-                PersistanceType = PersistanceType.LocalComputer
-            };
-            credential.Save();
+                try
+                {
+                    if (string.IsNullOrEmpty(apiKey))
+                    {
+                        if (File.Exists(_apiKeyFilePath))
+                        {
+                            File.Delete(_apiKeyFilePath); // Delete file if key is cleared
+                    }
+                    return;
+                }
+
+                byte[] apiKeyBytes = Encoding.UTF8.GetBytes(apiKey);
+                byte[] encryptedData = ProtectedData.Protect(apiKeyBytes, _entropy, DataProtectionScope.CurrentUser);
+                File.WriteAllBytes(_apiKeyFilePath, encryptedData);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error saving API key: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private string GetApiKey()
         {
-            var credential = new Credential { Target = "WinSpeechToTextApiKey" };
-            if (credential.Load())
+            try
             {
-                return credential.Password;
+                if (!File.Exists(_apiKeyFilePath))
+                {
+                    return string.Empty;
+                }
+
+                byte[] encryptedData = File.ReadAllBytes(_apiKeyFilePath);
+                byte[] apiKeyBytes = ProtectedData.Unprotect(encryptedData, _entropy, DataProtectionScope.CurrentUser);
+                return Encoding.UTF8.GetString(apiKeyBytes);
             }
-            return string.Empty;
+            catch (CryptographicException)
+            {
+                // Decryption failed (e.g., file corrupted or from different user/machine)
+                try { File.Delete(_apiKeyFilePath); } catch { /* Ignore delete error */ }
+                return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error reading API key: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return string.Empty;
+            }
         }
 
-        // Add KeyDown event handler for the Escape key
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape)
             {
-                // Minimize to system tray when Escape is pressed
                 MinimizeToTray();
-                e.Handled = true;  // Prevent further processing of this key
+                e.Handled = true;
             }
         }
 
-        // Add a helper method to minimize to tray
         private void MinimizeToTray()
         {
-            // Hide the form
             this.Hide();
-            
-            // If recording is in progress, don't stop it
-            // This allows the user to continue recording even when minimized
-            
-            // Show a notification if needed
-            // trayIcon.ShowBalloonTip(1000, "WinSpeechToText", "Application minimized to tray", ToolTipIcon.Info);
+            // Recording continues while minimized
+            // Optional: trayIcon.ShowBalloonTip(1000, "WinSpeechToText", "Minimized to tray", ToolTipIcon.Info);
         }
     }
 }

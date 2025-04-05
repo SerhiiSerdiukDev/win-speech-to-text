@@ -1,10 +1,12 @@
 using System;
+using System.ComponentModel; // Added for DesignerSerializationVisibility
 using System.Windows.Forms;
 
 namespace WinSpeechToText
 {
     public partial class ApiKeyDialog : Form
     {
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string ApiKey { get; private set; }
 
         public ApiKeyDialog(string existingApiKey = "")
