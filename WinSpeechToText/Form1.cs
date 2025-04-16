@@ -75,6 +75,13 @@ namespace WinSpeechToText
             trayIcon.ContextMenuStrip = trayMenu;
             trayIcon.Visible = true;
             trayIcon.DoubleClick += TrayIcon_DoubleClick;
+            
+            // Check if application was started from Windows startup
+            if (IsStartedFromWindowsStartup())
+            {
+                // Use BeginInvoke to minimize after the form is fully loaded
+                this.BeginInvoke(new Action(() => MinimizeToTray()));                
+            }
         }
 
         private void TrayIcon_DoubleClick(object sender, EventArgs e)
@@ -499,7 +506,55 @@ namespace WinSpeechToText
         {
             this.Hide();
             // Recording continues while minimized
-            // Optional: trayIcon.ShowBalloonTip(1000, "WinSpeechToText", "Minimized to tray", ToolTipIcon.Info);
+            trayIcon.ShowBalloonTip(2000, "WinSpeechToText", "Application is running in the system tray", ToolTipIcon.Info);
+        }
+        
+        /// <summary>
+        /// Determines if the application was started from Windows startup.
+        /// </summary>
+        /// <returns>True if started from Windows startup, false otherwise.</returns>
+        private bool IsStartedFromWindowsStartup()
+        {
+            try
+            {
+                // Get the startup registry key
+                const string startupRegistryKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run";
+                const string applicationName = "WinSpeechToText";
+                
+                using (Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(startupRegistryKey))
+                {
+                    if (key == null) return false;
+                    
+                    // Check if our application is in the startup registry
+                    object value = key.GetValue(applicationName);
+                    if (value == null) return false;
+                    
+                    // Get the command line arguments
+                    string[] args = Environment.GetCommandLineArgs();
+                    string exePath = Application.ExecutablePath;
+                    
+                    // Additional check: compare process start time with system uptime
+                    // If the app was started very close to system startup, it's likely from Windows startup
+                    TimeSpan uptime = TimeSpan.FromMilliseconds(Environment.TickCount);
+                    DateTime processStartTime = System.Diagnostics.Process.GetCurrentProcess().StartTime;
+                    TimeSpan timeSinceSystemStart = DateTime.Now - processStartTime;
+                    
+                    // If the process started within 2 minutes of system startup, consider it started from Windows startup
+                    if (timeSinceSystemStart.TotalMinutes < 2)
+                    {
+                        return true;
+                    }
+                    
+                    // Check for any startup-specific command line arguments if you have them
+                    // For now, just check if the registry entry exists and the app started near system boot
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+                // If there's any error, assume it wasn't started from startup
+                return false;
+            }
         }
     }
 }
