@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Net.Http;
@@ -420,32 +420,32 @@ namespace WinSpeechToText
             StartRecording();
         }
 
-        private void btnSetApiKey_Click(object sender, EventArgs e)
-        {
-            string existingApiKey = GetApiKey();
-            using (var dialog = new ApiKeyDialog(existingApiKey))
-            {
-                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
-                    SaveApiKey(dialog.ApiKey);
-                }
-            }
-        }
-
         private void btnCopy_Click(object sender, EventArgs e)
         {
             Clipboard.SetText(txtTranscription.Text);
         }
 
-            private void SaveApiKey(string apiKey)
+        private void btnSettings_Click(object sender, EventArgs e)
+        {
+            string existingApiKey = GetApiKey();
+            using (var settingsDialog = new SettingsDialog(existingApiKey))
             {
-                try
+                if (settingsDialog.ShowDialog(this) == DialogResult.OK && !string.IsNullOrEmpty(settingsDialog.ApiKey))
                 {
-                    if (string.IsNullOrEmpty(apiKey))
+                    SaveApiKey(settingsDialog.ApiKey);
+                }
+            }
+        }
+
+        private void SaveApiKey(string apiKey)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(apiKey))
+                {
+                    if (File.Exists(_apiKeyFilePath))
                     {
-                        if (File.Exists(_apiKeyFilePath))
-                        {
-                            File.Delete(_apiKeyFilePath); // Delete file if key is cleared
+                        File.Delete(_apiKeyFilePath); // Delete file if key is cleared
                     }
                     return;
                 }

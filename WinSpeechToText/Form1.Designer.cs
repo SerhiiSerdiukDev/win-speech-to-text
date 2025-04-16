@@ -1,4 +1,4 @@
-﻿namespace WinSpeechToText
+namespace WinSpeechToText
 {
     partial class Form1
     {
@@ -29,101 +29,99 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            this.btnRecord = new System.Windows.Forms.Button();
-            this.btnTranslate = new System.Windows.Forms.Button();
-            this.txtTranscription = new System.Windows.Forms.TextBox();
-            this.lblStatus = new System.Windows.Forms.Label();
-            this.btnSetApiKey = new System.Windows.Forms.Button();
-            this.btnCopy = new System.Windows.Forms.Button();
-            this.SuspendLayout();
+            btnRecord = new System.Windows.Forms.Button();
+            btnTranslate = new System.Windows.Forms.Button();
+            txtTranscription = new System.Windows.Forms.TextBox();
+            lblStatus = new System.Windows.Forms.Label();
+            btnCopy = new System.Windows.Forms.Button();
+            btnSettings = new System.Windows.Forms.Button();
+            SuspendLayout();
             // 
             // btnRecord
             // 
-            this.btnRecord.BackColor = System.Drawing.SystemColors.Control;
-            this.btnRecord.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnRecord.Location = new System.Drawing.Point(889, 13);
-            this.btnRecord.Margin = new System.Windows.Forms.Padding(4);
-            this.btnRecord.Name = "btnRecord";
-            this.btnRecord.Size = new System.Drawing.Size(160, 39);
-            this.btnRecord.TabIndex = 0;
-            this.btnRecord.Text = "To text";
-            this.btnRecord.UseVisualStyleBackColor = false;
-            this.btnRecord.Click += new System.EventHandler(this.btnRecord_Click);
+            btnRecord.BackColor = System.Drawing.SystemColors.Control;
+            btnRecord.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            btnRecord.Location = new System.Drawing.Point(889, 16);
+            btnRecord.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            btnRecord.Name = "btnRecord";
+            btnRecord.Size = new System.Drawing.Size(160, 49);
+            btnRecord.TabIndex = 0;
+            btnRecord.Text = "To text";
+            btnRecord.UseVisualStyleBackColor = false;
+            btnRecord.Click += btnRecord_Click;
             // 
             // btnTranslate
             // 
-            this.btnTranslate.Location = new System.Drawing.Point(889, 60);
-            this.btnTranslate.Margin = new System.Windows.Forms.Padding(4);
-            this.btnTranslate.Name = "btnTranslate";
-            this.btnTranslate.Size = new System.Drawing.Size(160, 39);
-            this.btnTranslate.TabIndex = 1;
-            this.btnTranslate.Text = "To English";
-            this.btnTranslate.UseVisualStyleBackColor = true;
-            this.btnTranslate.Click += new System.EventHandler(this.btnTranslate_Click);
+            btnTranslate.Location = new System.Drawing.Point(889, 75);
+            btnTranslate.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            btnTranslate.Name = "btnTranslate";
+            btnTranslate.Size = new System.Drawing.Size(160, 49);
+            btnTranslate.TabIndex = 1;
+            btnTranslate.Text = "To English";
+            btnTranslate.UseVisualStyleBackColor = true;
+            btnTranslate.Click += btnTranslate_Click;
             // 
             // txtTranscription
             // 
-            this.txtTranscription.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtTranscription.Font = new System.Drawing.Font("Segoe UI", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtTranscription.Location = new System.Drawing.Point(16, 13);
-            this.txtTranscription.Margin = new System.Windows.Forms.Padding(4);
-            this.txtTranscription.Multiline = true;
-            this.txtTranscription.Name = "txtTranscription";
-            this.txtTranscription.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtTranscription.Size = new System.Drawing.Size(860, 180);
-            this.txtTranscription.TabIndex = 2;
+            txtTranscription.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            txtTranscription.Font = new System.Drawing.Font("Segoe UI", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
+            txtTranscription.Location = new System.Drawing.Point(16, 16);
+            txtTranscription.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            txtTranscription.Multiline = true;
+            txtTranscription.Name = "txtTranscription";
+            txtTranscription.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            txtTranscription.Size = new System.Drawing.Size(860, 224);
+            txtTranscription.TabIndex = 2;
             // 
             // lblStatus
             // 
-            this.lblStatus.AutoSize = true;
-            this.lblStatus.Location = new System.Drawing.Point(13, 197);
-            this.lblStatus.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(48, 16);
-            this.lblStatus.TabIndex = 3;
-            this.lblStatus.Text = "Ready";
-            // 
-            // btnSetApiKey
-            // 
-            this.btnSetApiKey.Location = new System.Drawing.Point(889, 154);
-            this.btnSetApiKey.Margin = new System.Windows.Forms.Padding(4);
-            this.btnSetApiKey.Name = "btnSetApiKey";
-            this.btnSetApiKey.Size = new System.Drawing.Size(160, 39);
-            this.btnSetApiKey.TabIndex = 4;
-            this.btnSetApiKey.Text = "Set API Key";
-            this.btnSetApiKey.UseVisualStyleBackColor = true;
-            this.btnSetApiKey.Click += new System.EventHandler(this.btnSetApiKey_Click);
+            lblStatus.AutoSize = true;
+            lblStatus.Location = new System.Drawing.Point(13, 246);
+            lblStatus.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            lblStatus.Name = "lblStatus";
+            lblStatus.Size = new System.Drawing.Size(50, 20);
+            lblStatus.TabIndex = 3;
+            lblStatus.Text = "Ready";
             // 
             // btnCopy
             // 
-            this.btnCopy.Location = new System.Drawing.Point(889, 107);
-            this.btnCopy.Margin = new System.Windows.Forms.Padding(4);
-            this.btnCopy.Name = "btnCopy";
-            this.btnCopy.Size = new System.Drawing.Size(160, 39);
-            this.btnCopy.TabIndex = 5;
-            this.btnCopy.Text = "Copy to Clipboard";
-            this.btnCopy.UseVisualStyleBackColor = true;
-            this.btnCopy.Click += new System.EventHandler(this.btnCopy_Click);
+            btnCopy.Location = new System.Drawing.Point(889, 134);
+            btnCopy.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            btnCopy.Name = "btnCopy";
+            btnCopy.Size = new System.Drawing.Size(160, 49);
+            btnCopy.TabIndex = 5;
+            btnCopy.Text = "Copy to Clipboard";
+            btnCopy.UseVisualStyleBackColor = true;
+            btnCopy.Click += btnCopy_Click;
+            // 
+            // btnSettings
+            // 
+            btnSettings.Location = new System.Drawing.Point(889, 191);
+            btnSettings.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            btnSettings.Name = "btnSettings";
+            btnSettings.Size = new System.Drawing.Size(160, 49);
+            btnSettings.TabIndex = 6;
+            btnSettings.Text = "Settings";
+            btnSettings.UseVisualStyleBackColor = true;
+            btnSettings.Click += btnSettings_Click;
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1062, 222);
-            this.Controls.Add(this.btnCopy);
-            this.Controls.Add(this.btnSetApiKey);
-            this.Controls.Add(this.lblStatus);
-            this.Controls.Add(this.txtTranscription);
-            this.Controls.Add(this.btnTranslate);
-            this.Controls.Add(this.btnRecord);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4);
-            this.Name = "Form1";
-            this.Text = "Win Speech To Text";
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size(1062, 278);
+            Controls.Add(btnSettings);
+            Controls.Add(btnCopy);
+            Controls.Add(lblStatus);
+            Controls.Add(txtTranscription);
+            Controls.Add(btnTranslate);
+            Controls.Add(btnRecord);
+            Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+            Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            Name = "Form1";
+            Text = "Win Speech To Text";
+            ResumeLayout(false);
+            PerformLayout();
 
         }
 
@@ -133,8 +131,8 @@
         private System.Windows.Forms.Button btnTranslate;
         private System.Windows.Forms.TextBox txtTranscription;
         private System.Windows.Forms.Label lblStatus;
-        private System.Windows.Forms.Button btnSetApiKey;
         private System.Windows.Forms.Button btnCopy;
+        private System.Windows.Forms.Button btnSettings;
     }
 }
 
